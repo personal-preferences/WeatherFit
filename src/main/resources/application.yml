@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: WeatherFit
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=2h
+
+OpenWeather:
+  api:
+    key: 7acc01394583322607972b9d508c0255
