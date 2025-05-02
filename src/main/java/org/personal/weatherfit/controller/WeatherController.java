@@ -1,4 +1,4 @@
-package org.personal.weatherfit;
+package org.personal.weatherfit.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.weatherfit.dto.CityDTO;
@@ -15,6 +15,7 @@ public class WeatherController {
 
     private final WeatherService weatherService;
 
+    // 위도 경도로 도시 이름 가져오기
     @GetMapping("/city")
     public ResponseEntity<CityDTO> getCity(@ModelAttribute GeocodingDTO geocodingDTO) {
         return ResponseEntity.ok(weatherService.getCity(geocodingDTO));
