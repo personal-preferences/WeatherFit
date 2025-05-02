@@ -1,9 +1,11 @@
-package org.personal.weatherfit;
+package org.personal.weatherfit.service;
 
 import lombok.RequiredArgsConstructor;
+import org.personal.weatherfit.GeminiClient;
 import org.personal.weatherfit.aggregate.Outfit;
 import org.personal.weatherfit.dto.OutfitRequestDTO;
 import org.personal.weatherfit.dto.OutfitResponseDTO;
+import org.personal.weatherfit.dto.WeatherDTO;
 import org.personal.weatherfit.repository.OutfitRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,9 @@ public class OutfitService {
     String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     // 날짜 받아서 res 조회 -> 있으면 DB에서 조회, 없으면 생성
-    public OutfitResponseDTO findOutfitByDate(OutfitRequestDTO dto) {
+    public OutfitResponseDTO findOutfitByDate(WeatherDTO weather) {
 
+        OutfitRequestDTO dto = new OutfitRequestDTO(weather.getWeather().get(0).getMain(), weather.getMain().getTempMin(), weather.getMain().getTempMax(), 20);
         Optional<Outfit> optionalOutfit = outfitRepository.findByOutfitDate(today);
         Outfit outfit = optionalOutfit.orElseGet(()->createOutfit(dto));
 
@@ -35,10 +38,10 @@ public class OutfitService {
         return """
             아래 정보를 참고하여 남성과 여성 각각에게 어울리는 옷차림을 추천해주세요.
 
-            - 최고 기온: %d도
-            - 최저 기온: %d도
+            - 최고 기온: %f도
+            - 최저 기온: %f도
             - 날씨: %s
-            - 강수 확률: %d%%
+            - 강수 확률: %f%%
 
             남성과 여성 모두 다음 4가지 항목으로 추천해주세요: 상의, 하의, 아우터, 신발
             각 항목은 다음 형식으로 출력해주세요: 간단한 설명(구체적인 아이템 예시)
@@ -76,7 +79,7 @@ public class OutfitService {
         String prompt = createPrompt(dto);
         String response = geminiClient.callGemini(prompt);
 
-        System.out.println(response);
+//        System.out.println(response);
 
         String[] lines = response.split("\\n");
 
