@@ -1,5 +1,6 @@
 package org.personal.weatherfit.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -95,7 +96,7 @@ public class OutfitService {
         String response = geminiClient.callGemini(prompt);
 
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println(response);
+//        System.out.println(response);
 
         try {
             JsonNode root = mapper.readTree(response);
@@ -123,32 +124,6 @@ public class OutfitService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        String[] lines = response.split("\\n");
-//
-//        for (String line : lines) {
-//            line = line.trim();
-//            if (!line.contains(":")) continue;
-//
-//            String[] parts = line.split(":", 2);
-//            if (parts.length < 2) continue;
-//
-//            String key = parts[0].trim();
-//            String value = parts[1].trim();
-//
-//            switch (key) {
-//                case "남성상의" -> outfit.setMaleTop(value);
-//                case "남성하의" -> outfit.setMaleBottom(value);
-//                case "남성아우터" -> outfit.setMaleOuter(value);
-//                case "남성신발" -> outfit.setMaleShoes(value);
-//
-//                case "여성상의" -> outfit.setFemaleTop(value);
-//                case "여성하의" -> outfit.setFemaleBottom(value);
-//                case "여성아우터" -> outfit.setFemaleOuter(value);
-//                case "여성신발" -> outfit.setFemaleShoes(value);
-//
-////                case "추가설명" -> outfit.setExtra(value);
-//            }
-//        }
 
         outfitRepository.save(outfit);
 
@@ -159,21 +134,35 @@ public class OutfitService {
 
         OutfitResponseDTO dto = new OutfitResponseDTO();
 
-        dto.setOutfitResId(outfit.getId());
-        dto.setOutfitDate(outfit.getOutfitDate());
+        OutfitResponseDTO.GenderOutfitDTO male = new OutfitResponseDTO.GenderOutfitDTO();
+        male.setTop(mapToItemDTO(outfit.getMaleTop()));
+        male.setBottom(mapToItemDTO(outfit.getMaleBottom()));
+        male.setOuterwear(mapToItemDTO(outfit.getMaleOuter()));
+        male.setShoes(mapToItemDTO(outfit.getMaleShoes()));
 
-        dto.setMaleTop(outfit.getMaleTop());
-        dto.setMaleBottom(outfit.getMaleBottom());
-        dto.setMaleOuter(outfit.getMaleOuter());
-        dto.setMaleShoes(outfit.getMaleShoes());
+        // Female Outfit 세팅
+        OutfitResponseDTO.GenderOutfitDTO female = new OutfitResponseDTO.GenderOutfitDTO();
+        female.setTop(mapToItemDTO(outfit.getFemaleTop()));
+        female.setBottom(mapToItemDTO(outfit.getFemaleBottom()));
+        female.setOuterwear(mapToItemDTO(outfit.getFemaleOuter()));
+        female.setShoes(mapToItemDTO(outfit.getFemaleShoes()));
 
-        dto.setFemaleTop(outfit.getFemaleTop());
-        dto.setFemaleBottom(outfit.getFemaleBottom());
-        dto.setFemaleOuter(outfit.getFemaleOuter());
-        dto.setFemaleShoes(outfit.getFemaleShoes());
-
-//        dto.setExtra(outfit.getExtra());
+        // OutfitResponseDTO에 male, female 추가
+        dto.setMale(male);
+        dto.setFemale(female);
 
         return dto;
+    }
+
+    private OutfitResponseDTO.ItemDTO mapToItemDTO(String itemJson) {
+        // JSON 문자열을 파싱해서 ItemDTO 객체로 변환
+        // 예시로 Material, Color, KoreanName, EnglishName이 JSON에 담겨 있다고 가정
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(itemJson, OutfitResponseDTO.ItemDTO.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
