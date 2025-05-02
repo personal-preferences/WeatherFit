@@ -1,5 +1,7 @@
 package org.personal.weatherfit.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.personal.weatherfit.GeminiClient;
 import org.personal.weatherfit.aggregate.Outfit;
@@ -46,8 +48,6 @@ public class OutfitService {
                     Use one item per category, selected from this list: ankle-boots.svg, blazer.svg, cardigan.svg, coat-woman.svg, high-heel.svg, hoddies.svg, one-piece-shirt.svg, one-piece-string.svg, padding-man.svg, padding-vest.svg, padding-woman.svg, pants-cargo.svg, pants-man.svg, pants-woman.svg, shirt-oxford.svg, shirt-pockets.svg, shirt-polo.svg, shoes-converse.svg, shoes-flat.svg, shorts-pockets.svg, shorts-woman.svg, shorts.svg, skirt-layered.svg, skirt-long.svg, skirt-short.svg, sleeveless.svg, socks.svg, suit-top.svg, t-shirt-man.svg, t-shirt-short.svg, t-shirt-woman.svg, vest.svg, watch-rectangle.svg, zip-up-man.svg, zip-up-woman.svg.
                 
                     Output in JSON format like this:
-                
-                    ```json
                     {
                       "male": {
                         "top": {
@@ -72,7 +72,9 @@ public class OutfitService {
                         "shoes": { ... }
                       }
                     }
-           
+                    
+                Please ensure that the response is in pure text format without markdown syntax, and the JSON structure should remain valid.
+                
             """.formatted(
                 dto.getMaxTemp(),
                 dto.getMinTemp(),
@@ -92,34 +94,61 @@ public class OutfitService {
         String prompt = createPrompt(dto);
         String response = geminiClient.callGemini(prompt);
 
+        ObjectMapper mapper = new ObjectMapper();
         System.out.println(response);
 
-        String[] lines = response.split("\\n");
+        try {
+            JsonNode root = mapper.readTree(response);
 
-        for (String line : lines) {
-            line = line.trim();
-            if (!line.contains(":")) continue;
+            String maleTop = mapper.writeValueAsString(root.path("male").path("top"));
+            String maleBottom = mapper.writeValueAsString(root.path("male").path("bottom"));
+            String maleOuter = mapper.writeValueAsString(root.path("male").path("outerwear"));
+            String maleShoes = mapper.writeValueAsString(root.path("male").path("shoes"));
 
-            String[] parts = line.split(":", 2);
-            if (parts.length < 2) continue;
+            String femaleTop = mapper.writeValueAsString(root.path("female").path("top"));
+            String femaleBottom = mapper.writeValueAsString(root.path("female").path("bottom"));
+            String femaleOuter = mapper.writeValueAsString(root.path("female").path("outerwear"));
+            String femaleShoes = mapper.writeValueAsString(root.path("female").path("shoes"));
 
-            String key = parts[0].trim();
-            String value = parts[1].trim();
+            outfit.setMaleTop(maleTop);
+            outfit.setMaleBottom(maleBottom);
+            outfit.setMaleOuter(maleOuter);
+            outfit.setMaleShoes(maleShoes);
 
-            switch (key) {
-                case "남성상의" -> outfit.setMaleTop(value);
-                case "남성하의" -> outfit.setMaleBottom(value);
-                case "남성아우터" -> outfit.setMaleOuter(value);
-                case "남성신발" -> outfit.setMaleShoes(value);
+            outfit.setFemaleTop(femaleTop);
+            outfit.setFemaleBottom(femaleBottom);
+            outfit.setFemaleOuter(femaleOuter);
+            outfit.setFemaleShoes(femaleShoes);
 
-                case "여성상의" -> outfit.setFemaleTop(value);
-                case "여성하의" -> outfit.setFemaleBottom(value);
-                case "여성아우터" -> outfit.setFemaleOuter(value);
-                case "여성신발" -> outfit.setFemaleShoes(value);
-
-//                case "추가설명" -> outfit.setExtra(value);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+//        String[] lines = response.split("\\n");
+//
+//        for (String line : lines) {
+//            line = line.trim();
+//            if (!line.contains(":")) continue;
+//
+//            String[] parts = line.split(":", 2);
+//            if (parts.length < 2) continue;
+//
+//            String key = parts[0].trim();
+//            String value = parts[1].trim();
+//
+//            switch (key) {
+//                case "남성상의" -> outfit.setMaleTop(value);
+//                case "남성하의" -> outfit.setMaleBottom(value);
+//                case "남성아우터" -> outfit.setMaleOuter(value);
+//                case "남성신발" -> outfit.setMaleShoes(value);
+//
+//                case "여성상의" -> outfit.setFemaleTop(value);
+//                case "여성하의" -> outfit.setFemaleBottom(value);
+//                case "여성아우터" -> outfit.setFemaleOuter(value);
+//                case "여성신발" -> outfit.setFemaleShoes(value);
+//
+////                case "추가설명" -> outfit.setExtra(value);
+//            }
+//        }
 
         outfitRepository.save(outfit);
 
