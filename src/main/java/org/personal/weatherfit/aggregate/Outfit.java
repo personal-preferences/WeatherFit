@@ -40,6 +40,4 @@ public class Outfit {
     @Column(name = "female_shoes")
     private String femaleShoes;
 
-    @Column(name = "extra")
-    private String extra;
 }

@@ -23,6 +23,6 @@ public class OutfitResponseDTO {
     private String femaleOuter;
     private String femaleShoes;
 
-    private String extra;
+//    private String extra;
     // 이미지 생성
 }
