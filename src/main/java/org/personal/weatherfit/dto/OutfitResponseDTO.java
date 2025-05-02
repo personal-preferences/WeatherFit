@@ -9,20 +9,32 @@ import lombok.*;
 @ToString
 public class OutfitResponseDTO {
 
-    // 날짜별 저장
-    private int outfitResId;
-    private String outfitDate;
+    private GenderOutfitDTO male;
+    private GenderOutfitDTO female;
 
-    private String maleTop;
-    private String maleBottom;
-    private String maleOuter;
-    private String maleShoes;
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @ToString
+    public static class GenderOutfitDTO {
+        private ItemDTO top;
+        private ItemDTO bottom;
+        private ItemDTO outerwear;
+        private ItemDTO shoes;
+    }
 
-    private String femaleTop;
-    private String femaleBottom;
-    private String femaleOuter;
-    private String femaleShoes;
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @ToString
+    public static class ItemDTO {
+        private String material;
+        private String color;
+        private String koreanName;
+        private String englishName;
+    }
 
 //    private String extra;
-    // 이미지 생성
 }

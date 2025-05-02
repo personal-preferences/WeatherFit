@@ -27,6 +27,8 @@ public class OutfitController {
 
         model.addAttribute("outfit", outfit);
 
+//        System.out.println(outfit);
+
         return "index";
     }
 }
