@@ -26,10 +26,10 @@ public class OutfitService {
     String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     // 날짜 받아서 res 조회 -> 있으면 DB에서 조회, 없으면 생성
-    public OutfitResponseDTO findOutfitByDate(WeatherDTO weather) {
+    public OutfitResponseDTO findOutfitByDate(WeatherDTO weather, String city) {
 
-        OutfitRequestDTO dto = new OutfitRequestDTO(weather.getWeather().get(0).getMain(), weather.getMain().getTempMin(), weather.getMain().getTempMax(), 20);
-        Optional<Outfit> optionalOutfit = outfitRepository.findByOutfitDate(today);
+        OutfitRequestDTO dto = new OutfitRequestDTO(weather.getWeather().get(0).getMain(), weather.getMain().getTempMin(), weather.getMain().getTempMax(), 20, city);
+        Optional<Outfit> optionalOutfit = outfitRepository.findByOutfitDateAndCity(today, city);
         Outfit outfit = optionalOutfit.orElseGet(()->createOutfit(dto));
 
         return convertToDTO(outfit);
@@ -100,6 +100,7 @@ public class OutfitService {
 
         // 오늘 날짜로 생성
         outfit.setOutfitDate(today);
+        outfit.setCity(dto.getCity());
 
         String prompt = createPrompt(dto);
         String response = geminiClient.callGemini(prompt);

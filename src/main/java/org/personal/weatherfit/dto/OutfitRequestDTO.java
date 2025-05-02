@@ -17,4 +17,5 @@ public class OutfitRequestDTO {
     private double rainProb;
 //    private String fineDust;
 
+    private String city;
 }

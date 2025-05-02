@@ -22,6 +22,9 @@ public class Outfit {
     @Column(name = "outfit_date")
     private String outfitDate;
 
+    @Column(name = "city")
+    private String city;
+
     @Column(name = "male_top")
     private String maleTop;
     @Column(name = "male_bottom")

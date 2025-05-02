@@ -34,8 +34,9 @@ public class OutfitController {
             Model model) {
 
         WeatherDTO weather = weatherService.getWeatherData(city);
-        OutfitResponseDTO outfit = outfitService.findOutfitByDate(weather);
+        OutfitResponseDTO outfit = outfitService.findOutfitByDate(weather, city);
 
+        model.addAttribute("weather", weather);
         model.addAttribute("outfit", outfit);
 
 //        System.out.println(outfit);
