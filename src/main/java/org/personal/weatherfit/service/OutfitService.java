@@ -36,30 +36,43 @@ public class OutfitService {
     public String createPrompt(OutfitRequestDTO dto) {
 
         return """
-            아래 정보를 참고하여 남성과 여성 각각에게 어울리는 옷차림을 추천해주세요.
-
-            - 최고 기온: %f도
-            - 최저 기온: %f도
-            - 날씨: %s
-            - 강수 확률: %f%%
-
-            남성과 여성 모두 다음 4가지 항목으로 추천해주세요: 상의, 하의, 아우터, 신발
-            각 항목은 다음 형식으로 출력해주세요: 간단한 설명(구체적인 아이템 예시)
-            (ex: 가을용 얇은 외투(가디건), 활동성 좋은 바지(면바지))
-            
-            이외의 마크다운 기호는 넣지 말고, 아래와 같은 포맷으로만 응답해주세요.
-            
-            남성상의: [내용]
-            남성하의: [내용]
-            남성아우터: [내용]
-            남성신발: [내용]
-            여성상의: [내용]
-            여성하의: [내용]
-            여성아우터: [내용]
-            여성신발: [내용]
-            추가설명: [내용]
-            
-            
+                Given:
+                    - Max temp: %f°C
+                    - Min temp: %f°C
+                    - Weather: %s
+                    - Precipitation: %f%%
+                
+                    Recommend clothing for men and women in the following categories: top, bottom, outerwear, shoes. \s
+                    Use one item per category, selected from this list: ankle-boots.svg, blazer.svg, cardigan.svg, coat-woman.svg, high-heel.svg, hoddies.svg, one-piece-shirt.svg, one-piece-string.svg, padding-man.svg, padding-vest.svg, padding-woman.svg, pants-cargo.svg, pants-man.svg, pants-woman.svg, shirt-oxford.svg, shirt-pockets.svg, shirt-polo.svg, shoes-converse.svg, shoes-flat.svg, shorts-pockets.svg, shorts-woman.svg, shorts.svg, skirt-layered.svg, skirt-long.svg, skirt-short.svg, sleeveless.svg, socks.svg, suit-top.svg, t-shirt-man.svg, t-shirt-short.svg, t-shirt-woman.svg, vest.svg, watch-rectangle.svg, zip-up-man.svg, zip-up-woman.svg.
+                
+                    Output in JSON format like this:
+                
+                    ```json
+                    {
+                      "male": {
+                        "top": {
+                          "material": "MATERIAL",
+                          "color": "COLOR",
+                          "koreanName": "한글명",
+                          "englishName": "FILENAME"
+                        },
+                        "bottom": { ... },
+                        "outerwear": { ... },
+                        "shoes": { ... }
+                      },
+                      "female": {
+                        "top": {
+                          "material": "MATERIAL",
+                          "color": "COLOR",
+                          "koreanName": "한글명",
+                          "englishName": "FILENAME"
+                        },
+                        "bottom": { ... },
+                        "outerwear": { ... },
+                        "shoes": { ... }
+                      }
+                    }
+           
             """.formatted(
                 dto.getMaxTemp(),
                 dto.getMinTemp(),
@@ -79,7 +92,7 @@ public class OutfitService {
         String prompt = createPrompt(dto);
         String response = geminiClient.callGemini(prompt);
 
-//        System.out.println(response);
+        System.out.println(response);
 
         String[] lines = response.split("\\n");
 
@@ -104,7 +117,7 @@ public class OutfitService {
                 case "여성아우터" -> outfit.setFemaleOuter(value);
                 case "여성신발" -> outfit.setFemaleShoes(value);
 
-                case "추가설명" -> outfit.setExtra(value);
+//                case "추가설명" -> outfit.setExtra(value);
             }
         }
 
@@ -130,7 +143,7 @@ public class OutfitService {
         dto.setFemaleOuter(outfit.getFemaleOuter());
         dto.setFemaleShoes(outfit.getFemaleShoes());
 
-        dto.setExtra(outfit.getExtra());
+//        dto.setExtra(outfit.getExtra());
 
         return dto;
     }
