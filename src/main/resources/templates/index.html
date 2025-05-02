@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>오늘의 추천 코디 - 웨더핏</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 이전 스타일 유지 */
+        :root {
+            --primary-bg: #F8F9FA;
+            --secondary-accent: #A3B899;
+            --secondary-accent-bg: #eef3ec;
+            --accent-warm: #E89F71;
+            --accent-button: #556B2F;
+            --text-primary: #5D4037;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+        }
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Noto Sans KR', sans-serif;
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+        }
+        /* Header */
+        .weather-info { display: flex; align-items: center; font-size: 1.1rem; font-weight: 500; color: var(--text-primary); }
+        .weather-info img { margin-right: 0.5rem; width: 40px; height: 40px; }
+        .weather-feels-like { font-size: 0.9rem; color: var(--text-secondary); margin-left: 0.5rem; }
+        .location-info { display: inline-flex; align-items: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; gap: 0.3rem; padding: 0.2rem 0.4rem; border-radius: 4px; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; border: 1px solid transparent; }
+        .location-info i { color: var(--secondary-accent); font-size: 1.3rem; }
+        .location-info:hover { color: var(--text-primary); background-color: rgba(163, 184, 153, 0.1); border-color: rgba(163, 184, 153, 0.3); }
+        /* Date */
+        .date { color: var(--text-secondary); font-size: 1rem; font-weight: 300; }
+        /* Titles */
+        h1, h2, h3, h4, h5 { color: var(--text-primary); font-weight: 500; margin-bottom: 1.5rem; }
+        /* Outfit Section */
+        .outfit-item { margin-bottom: 2rem; text-align: center; }
+        .outfit-image-placeholder { width: 80%; max-width: 300px; height: auto; aspect-ratio: 3 / 4; background-color: #e9ecef; display: inline-block; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); position: relative; }
+        .outfit-image-placeholder::before { content: '코디 이미지'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-secondary); font-size: 1.1rem; }
+        .outfit-details { text-align: center; padding: 0 1rem; }
+        .outfit-details p { color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.6; }
+        .outfit-details .label { font-weight: 500; color: var(--text-secondary); width: auto; margin-right: 0.5rem; display: inline; }
+        .outfit-title { font-size: 1.3rem; font-weight: 500; margin-bottom: 1.5rem; }
+        .text-secondary { color: var(--text-secondary) !important; }
+        /* 로딩 스피너 숨김 스타일 */
+        #loading-indicator { display: none; /* 초기에는 숨김 */ position: fixed; top: 1rem; left: 1rem; z-index: 1050; }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- 로딩 인디케이터 (페이지 로드 시 위치 가져올 때 표시) -->
+<div id="loading-indicator" class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Loading...</span>
+</div>
+
+
+<div class="container mt-3 mb-5">
+    <!-- Header Row -->
+    <div class="row align-items-center mb-4">
+        <!-- Weather Info (Left) -->
+        <div class="col">
+            <div class="weather-info" th:if="${weatherData != null && weatherData.main != null && weatherData.weather != null && !weatherData.weather.isEmpty()}">
+                <img th:src="'http://openweathermap.org/img/wn/' + ${weatherData.weather[0].icon} + '@2x.png'" alt="날씨 아이콘">
+                <div>
+                    <span th:text="${#numbers.formatDecimal(weatherData.main.temp, 1, 0)} + '°C'"></span>
+                    <div class="weather-feels-like" th:text="'체감 ' + ${#numbers.formatDecimal(weatherData.main.feelsLike, 1, 0)} + '°C'"></div>
+                </div>
+            </div>
+            <div class="weather-info" th:unless="${weatherData != null && weatherData.main != null && weatherData.weather != null && !weatherData.weather.isEmpty()}">
+                <i class="bi bi-thermometer-low fs-3" style="color: var(--text-secondary);"></i>
+                <span class="ms-2">날씨 정보 로딩 중...</span>
+            </div>
+        </div>
+        <!-- Location Info (Right) -->
+        <div class="col-auto text-end">
+            <a href="#" class="location-info text-decoration-none" id="location-selector"> <!-- ID 추가 -->
+                <!-- 현재 위치 기반이면 아이콘 강조 (선택 사항) -->
+                <span th:text="${selectedCityName != null ? selectedCityName : '위치 설정'}">Seoul</span>
+                <i class="bi-geo-alt-fill"></i> <!-- 위치 아이콘 -->
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Row -->
+    <div class="row text-center mb-5">
+        <div class="col">
+            <span class="date fs-5" th:text="${currentDate}">05월 01일 목요일</span>
+        </div>
+    </div>
+
+    <!-- Outfit Recommendation Row -->
+    <div class="row g-lg-5 g-md-4 g-3 justify-content-center" th:if="${weatherData != null and outfitRecommendation != null}">
+        <!-- Male Outfit Column -->
+        <div class="col-12 col-md-6 col-lg-5">
+            <div class="outfit-item">
+                <h5 class="outfit-title">남성 추천 코디</h5>
+                <div class="outfit-image-placeholder"></div>
+                <div class="outfit-details mt-3" th:if="${outfitRecommendation.maleOutfit != null}">
+                    <p><span class="label">상의:</span> <span th:text="${outfitRecommendation.maleOutfit.top}">린넨 셔츠</span></p>
+                    <p><span class="label">하의:</span> <span th:text="${outfitRecommendation.maleOutfit.bottom}">치노 팬츠</span></p>
+                    <p><span class="label">아우터:</span> <span th:text="${outfitRecommendation.maleOutfit.outer}">얇은 가디건</span></p>
+                    <p><span class="label">신발:</span> <span th:text="${outfitRecommendation.maleOutfit.shoes}">로퍼</span></p>
+                    <p><span class="label">액세서리:</span> <span th:text="${outfitRecommendation.maleOutfit.accessory}">선글라스, 캔버스 백</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Female Outfit Column -->
+        <div class="col-12 col-md-6 col-lg-5">
+            <div class="outfit-item">
+                <h5 class="outfit-title">여성 추천 코디</h5>
+                <div class="outfit-image-placeholder"></div>
+                <div class="outfit-details mt-3" th:if="${outfitRecommendation.femaleOutfit != null}">
+                    <p><span class="label">상의:</span> <span th:text="${outfitRecommendation.femaleOutfit.top}">코튼 블라우스</span></p>
+                    <p><span class="label">하의:</span> <span th:text="${outfitRecommendation.femaleOutfit.bottom}">A라인 스커트</span></p>
+                    <p><span class="label">아우터:</span> <span th:text="${outfitRecommendation.femaleOutfit.outer}">청자켓</span></p>
+                    <p><span class="label">신발:</span> <span th:text="${outfitRecommendation.femaleOutfit.shoes}">스니커즈</span></p>
+                    <p><span class="label">액세서리:</span> <span th:text="${outfitRecommendation.femaleOutfit.accessory}">에코백, 캡모자</span></p>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.row -->
+
+</div> <!-- /.container -->
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<!-- JS 스크립트 -->
+<script th:inline="javascript">
+    var currentSelectedCity = /*[[${selectedCityName}]]*/ null; // 서버에서 전달된 현재 도시 이름
+    var isBasedOnCurrentLocation = /*[[${isCurrentLocation}]]*/ false; // 현재 위치 기반인지 여부
+
+    // 현재 URL 파라미터 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasLatLon = urlParams.has('lat') && urlParams.has('lon');
+    const hasCity = urlParams.has('city');
+
+    function getCurrentLocationWeather() {
+        if ("geolocation" in navigator) {
+            $('#loading-indicator').show(); // 로딩 시작 표시
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                console.log("현재 위치:", latitude, longitude);
+                $('#loading-indicator').hide(); // 로딩 숨김
+
+                // 위도/경도 파라미터로 페이지 리디렉션
+                window.location.href = '/outfit/recommended?lat=' + latitude + '&lon=' + longitude;
+
+            }, function(error) {
+                $('#loading-indicator').hide(); // 로딩 숨김
+                console.error("Geolocation 오류:", error.code, error.message);
+                let message = "현재 위치를 가져올 수 없습니다.";
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = "위치 정보 접근 권한이 거부되었습니다.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = "위치 정보를 사용할 수 없습니다.";
+                        break;
+                    case error.TIMEOUT:
+                        message = "위치 정보 요청 시간이 초과되었습니다.";
+                        break;
+                }
+                // 실패 시 사용자에게 알림 (선택 사항)
+                // alert(message + ' 기본 위치(Seoul) 또는 마지막 검색 위치로 표시합니다.');
+                // 실패하면 현재 페이지(기본 도시 또는 city 파라미터 도시) 유지
+            }, {
+                enableHighAccuracy: false, // 필요시 true로 변경
+                timeout: 10000,          // 10초 타임아웃
+                maximumAge: 0            // 캐시 사용 안 함
+            });
+        } else {
+            console.log("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
+            // 지원되지 않으면 현재 페이지(기본 도시 또는 city 파라미터 도시) 유지
+        }
+    }
+
+    $(document).ready(function() {
+        // 페이지 로드 시, URL에 위도/경도 파라미터가 없고 도시 파라미터도 없을 경우 (최초 접속 시) 현재 위치 요청 시도
+        // 또는, 사용자가 이전에 현재 위치를 선택하지 않았을 경우 요청
+        if (!hasLatLon && !hasCity) {
+            getCurrentLocationWeather();
+        }
+
+        // 위치 정보(텍스트+아이콘) 클릭 이벤트
+        $('#location-selector').on('click', function(e) {
+            e.preventDefault();
+
+            var currentCityName = currentSelectedCity ? currentSelectedCity : "";
+            var newCity = prompt("도시 이름을 입력하세요:", currentCityName);
+            if (newCity !== null && newCity.trim() !== "") {
+                window.location.href = '/outfit/recommended?city=' + encodeURIComponent(newCity.trim());
+            } else if (newCity === "") {
+                alert("도시 이름을 입력해주세요.");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
