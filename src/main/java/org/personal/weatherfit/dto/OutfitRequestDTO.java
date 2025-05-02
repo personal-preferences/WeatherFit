@@ -11,11 +11,10 @@ import lombok.Setter;
 @Setter
 public class OutfitRequestDTO {
 
-    private int outfitReqId;
     private String weather;
-    private int minTemp;
-    private int maxTemp;
-    private int rainProb;
+    private double minTemp;
+    private double maxTemp;
+    private double rainProb;
 //    private String fineDust;
 
 }
