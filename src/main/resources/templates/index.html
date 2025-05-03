@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>오늘의 추천 코디 - 웨더핏</title>
+    <title>WeatherFit: 날씨 기반 추천 코디</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -36,9 +36,10 @@
         .date { color: var(--text-secondary); font-size: 1rem; font-weight: 300; }
         h1, h2, h3, h4, h5 { color: var(--text-primary); font-weight: 500; margin-bottom: 1.5rem; }
         .outfit-item { margin-bottom: 2rem; text-align: center; }
-        .outfit-details { text-align: center; padding: 0 1rem; }
-        .outfit-details p { color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.6; font-size: 0.95rem; }
-        .outfit-details .label { font-weight: 500; color: var(--text-secondary); width: auto; margin-right: 0.5rem; display: inline; }
+        .outfit-details { text-align: center; padding: 0 1rem; width: fit-content; margin: 0 auto; }
+        /*.outfit-details p { color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.6; font-size: 0.95rem; }*/
+        .outfit-details p { color: var(--text-primary); display: flex; justify-content: flex-start; align-items: baseline; margin-bottom: 0.4rem; line-height: 1.6; font-size: 0.95rem; }
+        .outfit-details .label { font-weight: 500; color: var(--text-secondary); width: 60px; margin-right: 0.5rem; display: inline; }
         .outfit-title { font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem; }
         .text-secondary { color: var(--text-secondary) !important; }
         #loading-indicator { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1050; }
@@ -153,7 +154,7 @@
     </div>
 
     <!-- Date Row -->
-    <div class="row text-center mb-5">
+    <div class="row text-center mb-4">
         <div class="col">
             <!-- Assuming currentDate is still passed from controller -->
             <span class="date fs-5" th:text="${#temporals.format(#temporals.createToday(), 'yyyy년 MM월 dd일 EEEE', T(java.util.Locale).KOREAN)}">날짜 정보</span>
@@ -163,7 +164,8 @@
     <!-- City Title Row -->
     <div class="row text-center mb-4" th:if="${weather != null}">
         <div class="col">
-            <h2 class="fw-normal" th:text="${weather.name} + ' 추천 코디'">도시 추천 코디</h2>
+            <h2 class="fw-normal mb-2">날씨 맞춤 코디</h2>
+            <h3 class="fw-normal fs-4 text-secondary" th:text="'[ ' + ${weather.name} + ' ]'">도시 이름</h3>
         </div>
     </div>
 
@@ -177,7 +179,7 @@
                 <!-- Container for combined SVGs -->
                 <div class="outfit-svg-composition" id="male-outfit-svgs">
                     <!-- SVGs will be injected here by JavaScript -->
-                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩중...</span>
+                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩 중...</span>
                 </div>
                 <!-- Access nested DTO fields -->
                 <div class="outfit-details mt-3" th:if="${outfit.male != null}">
@@ -201,7 +203,7 @@
             <div class="outfit-item">
                 <h5 class="outfit-title">여성 추천 코디</h5>
                 <div class="outfit-svg-composition" id="female-outfit-svgs">
-                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩중...</span>
+                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩 중...</span>
                 </div>
                 <div class="outfit-details mt-3" th:if="${outfit.female != null}">
                     <p><span class="label">상의:</span> <span th:text="${outfit.female.top?.koreanName}">정보 없음</span></p>

@@ -55,8 +55,7 @@ public class OutfitService {
                         *   **Balance and Accent:** Aim for a balanced look, generally using 2-3 main colors in the outfit. One piece (often shoes, outerwear, or sometimes a top/bottom) can serve as a deliberate accent color, especially if the rest of the outfit is neutral or uses related colors.
                                         
                     Use one item per category, selected from this list: ankle-boots.svg, blazer.svg, cardigan.svg, coat-woman.svg, high-heel.svg, hoddies.svg, one-piece-shirt.svg, one-piece-string.svg, padding-man.svg, padding-vest.svg, padding-woman.svg, pants-cargo.svg, pants-man.svg, pants-woman.svg, shirt-oxford.svg, shirt-pockets.svg, shirt-polo.svg, shoes-converse.svg, shoes-flat.svg, shorts-pockets.svg, shorts-woman.svg, shorts.svg, skirt-layered.svg, skirt-long.svg, skirt-short.svg, sleeveless.svg, socks.svg, suit-top.svg, t-shirt-man.svg, t-shirt-short.svg, t-shirt-woman.svg, vest.svg, watch-rectangle.svg, zip-up-man.svg, zip-up-woman.svg.
-                    The `color` value MUST be a valid CSS color string (e.g., standard color names like `black`, `white`, `navy`, `beige`, `khaki`).
-                    
+                    The color value must strictly be selected from the 148 standard CSS color names (e.g., black, white, navy, beige, khaki). Do not use hex codes, RGB values, or non-standard color.
                     Output in JSON format like this:
                     {
                       "male": {
