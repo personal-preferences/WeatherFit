@@ -26,10 +26,10 @@ public class OutfitService {
     String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     // 날짜 받아서 res 조회 -> 있으면 DB에서 조회, 없으면 생성
-    public OutfitResponseDTO findOutfitByDate(WeatherDTO weather) {
+    public OutfitResponseDTO findOutfitByDate(WeatherDTO weather, String city) {
 
-        OutfitRequestDTO dto = new OutfitRequestDTO(weather.getWeather().get(0).getMain(), weather.getMain().getTempMin(), weather.getMain().getTempMax(), 20);
-        Optional<Outfit> optionalOutfit = outfitRepository.findByOutfitDate(today);
+        OutfitRequestDTO dto = new OutfitRequestDTO(weather.getWeather().get(0).getMain(), weather.getMain().getTempMin(), weather.getMain().getTempMax(), 20, city);
+        Optional<Outfit> optionalOutfit = outfitRepository.findByOutfitDateAndCity(today, city);
         Outfit outfit = optionalOutfit.orElseGet(()->createOutfit(dto));
 
         return convertToDTO(outfit);
@@ -46,8 +46,17 @@ public class OutfitService {
                     - Precipitation: %f%%
                 
                     Recommend clothing for men and women in the following categories: top, bottom, outerwear, shoes. \s
+                    **Harmonious Color Coordination:** Create *harmonious and visually appealing* color combinations for the *entire outfit* (top, bottom, outerwear, shoes) for both men and women. Apply the following color combination principles:
+                        *   **Utilize Neutral Colors:** Make effective use of neutral colors (e.g., black, white, gray, beige, navy, khaki, brown) as the base of the outfit or to balance bolder colors. They combine well with almost any color.
+                        *   **Consider Color Relationships:**
+                            *   **Tone-on-Tone / Tone-in-Tone:** Combine different shades/tints of the same color (e.g., light blue + navy) or colors with similar brightness/saturation (e.g., pastel pink + pastel mint) for a subtle and sophisticated look.
+                            *   **Analogous Colors:** Use colors next to each other on the color wheel (e.g., blue and green) for a naturally harmonious feel.
+                            *   **Complementary/Contrast (Use with Care):** Use colors opposite on the color wheel (e.g., blue and orange) for a strong statement. Often best achieved by using one color as an accent (like shoes or an accessory) against a more subdued or neutral background, rather than large blocks of both.
+                        *   **Balance and Accent:** Aim for a balanced look, generally using 2-3 main colors in the outfit. One piece (often shoes, outerwear, or sometimes a top/bottom) can serve as a deliberate accent color, especially if the rest of the outfit is neutral or uses related colors.
+                                        
                     Use one item per category, selected from this list: ankle-boots.svg, blazer.svg, cardigan.svg, coat-woman.svg, high-heel.svg, hoddies.svg, one-piece-shirt.svg, one-piece-string.svg, padding-man.svg, padding-vest.svg, padding-woman.svg, pants-cargo.svg, pants-man.svg, pants-woman.svg, shirt-oxford.svg, shirt-pockets.svg, shirt-polo.svg, shoes-converse.svg, shoes-flat.svg, shorts-pockets.svg, shorts-woman.svg, shorts.svg, skirt-layered.svg, skirt-long.svg, skirt-short.svg, sleeveless.svg, socks.svg, suit-top.svg, t-shirt-man.svg, t-shirt-short.svg, t-shirt-woman.svg, vest.svg, watch-rectangle.svg, zip-up-man.svg, zip-up-woman.svg.
-                
+                    The `color` value MUST be a valid CSS color string (e.g., standard color names like `black`, `white`, `navy`, `beige`, `khaki`).
+                    
                     Output in JSON format like this:
                     {
                       "male": {
@@ -91,6 +100,7 @@ public class OutfitService {
 
         // 오늘 날짜로 생성
         outfit.setOutfitDate(today);
+        outfit.setCity(dto.getCity());
 
         String prompt = createPrompt(dto);
         String response = geminiClient.callGemini(prompt);

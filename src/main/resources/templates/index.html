@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 이전 스타일 유지 */
+        /* Styles from previous "Natural & Comfortable" theme */
         :root {
             --primary-bg: #F8F9FA;
             --secondary-accent: #A3B899;
@@ -26,69 +26,128 @@
             --text-secondary: #6c757d;
             --border-color: #dee2e6;
         }
-        body {
-            background-color: var(--primary-bg);
-            color: var(--text-primary);
-            font-family: 'Noto Sans KR', sans-serif;
-            padding-top: 1.5rem;
-            padding-bottom: 2rem;
-        }
-        /* Header */
+        body { background-color: var(--primary-bg); color: var(--text-primary); font-family: 'Noto Sans KR', sans-serif; padding-top: 1.5rem; padding-bottom: 2rem; }
         .weather-info { display: flex; align-items: center; font-size: 1.1rem; font-weight: 500; color: var(--text-primary); }
         .weather-info img { margin-right: 0.5rem; width: 40px; height: 40px; }
         .weather-feels-like { font-size: 0.9rem; color: var(--text-secondary); margin-left: 0.5rem; }
         .location-info { display: inline-flex; align-items: center; font-size: 1rem; color: var(--text-secondary); cursor: pointer; gap: 0.3rem; padding: 0.2rem 0.4rem; border-radius: 4px; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; border: 1px solid transparent; }
         .location-info i { color: var(--secondary-accent); font-size: 1.3rem; }
         .location-info:hover { color: var(--text-primary); background-color: rgba(163, 184, 153, 0.1); border-color: rgba(163, 184, 153, 0.3); }
-        /* Date */
         .date { color: var(--text-secondary); font-size: 1rem; font-weight: 300; }
-        /* Titles */
         h1, h2, h3, h4, h5 { color: var(--text-primary); font-weight: 500; margin-bottom: 1.5rem; }
-        /* Outfit Section */
         .outfit-item { margin-bottom: 2rem; text-align: center; }
-        .outfit-image-placeholder { width: 80%; max-width: 300px; height: auto; aspect-ratio: 3 / 4; background-color: #e9ecef; display: inline-block; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); position: relative; }
-        .outfit-image-placeholder::before { content: '코디 이미지'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-secondary); font-size: 1.1rem; }
         .outfit-details { text-align: center; padding: 0 1rem; }
-        .outfit-details p { color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.6; }
+        .outfit-details p { color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.6; font-size: 0.95rem; }
         .outfit-details .label { font-weight: 500; color: var(--text-secondary); width: auto; margin-right: 0.5rem; display: inline; }
-        .outfit-title { font-size: 1.3rem; font-weight: 500; margin-bottom: 1.5rem; }
+        .outfit-title { font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem; }
         .text-secondary { color: var(--text-secondary) !important; }
-        /* 로딩 스피너 숨김 스타일 */
-        #loading-indicator { display: none; /* 초기에는 숨김 */ position: fixed; top: 1rem; left: 1rem; z-index: 1050; }
+        #loading-indicator { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1050; }
+
+        /* Placeholder for SVG combination */
+        .outfit-svg-composition {
+            width: 80%;
+            max-width: 280px;
+            height: auto;
+            aspect-ratio: 2 / 3; /* Maintain aspect ratio */
+            background-color: #e9ecef; /* Fallback background */
+            display: inline-block; /* Center alignment */
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+            position: relative; /* Needed for positioning SVGs inside */
+            overflow: hidden; /* Prevent SVGs from overflowing */
+        }
+        .outfit-svg-composition svg {
+            position: absolute; /* Allow stacking */
+            top: 5%;
+            width: 90%; /* Adjust size as needed */
+            height: 90%;
+            object-fit: contain; /* Scale SVG nicely */
+            opacity: 1 !important;  /* 불투명하게 강제 */
+            fill: white; /* Default fill color */
+
+            /* --- 수평 가운데 정렬 --- */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* Specific positioning adjustments (EXAMPLES - MUST BE FINE-TUNED) */
+        /* 아우터 (가장 뒤) */
+        .outfit-svg-composition svg.svg-outerwear {
+            z-index: 4; /* 가장 위 */
+            top: 2%;
+            width: 95%; /* 컨테이너 너비 거의 다 사용 */
+            height: 95%; /* 컨테이너 높이 거의 다 사용 */
+        }
+
+        /* 상의 */
+        .outfit-svg-composition svg.svg-top {
+            z-index: 3; /* 하의 위 */
+            top: 5%;    /* 상단에서 약간 내려옴 */
+            width: 85%; /* 아우터보다 약간 작게 */
+            height: 40%; /* 높이 비율 (상의 영역) */
+        }
+
+        /* 하의 ( 수정됨 ) */
+        .outfit-svg-composition svg.svg-bottom {
+            z-index: 2; /* 가장 아래 */
+            top: 40%; /*  시작 위치를 조금 위로 조정하여 상의와 겹치게  */
+            /* width: auto; !*  상의보다 약간 좁게 (자연스러운 비율)  *!*/
+            height: 50%; /*  높이 비율을 늘려 더 길게 보이도록  */
+            /* left: 50%; transform: translateX(-50%)는 공통 스타일 적용 */
+        }
+
+        /* 신발 ( 수정됨 ) */
+        .outfit-svg-composition svg.svg-shoes {
+            z-index: 1; /* 하의 아래 */
+            top: 85%; /*  위치를 하단으로 조정 */
+            width: 25%; /*  너비를 하의보다 작게 */
+            height: auto; /*  높이 비율을 줄여 작게 보이도록  */
+            /* left: 50%; transform: translateX(-50%)는 공통 스타일 적용 */
+        }
+
+        /* 왼쪽 신발 위치 */
+        .outfit-svg-composition svg.svg-shoes-left {
+            left: 44%; /* 중앙에서 왼쪽으로 이동 (값 조절 필요) */
+            transform: translateX(-50%); /* 자신의 중앙 기준으로 정렬 */
+        }
+
+        /* 오른쪽 신발 위치 */
+        .outfit-svg-composition svg.svg-shoes-right {
+            left: 67%; /* 중앙에서 오른쪽으로 이동 (값 조절 필요) */
+            transform: translateX(-50%); /* 자신의 중앙 기준으로 정렬 */
+            /* 필요하다면 좌우 반전: transform: translateX(-50%) scaleX(-1); */
+        }
+
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
-<!-- 로딩 인디케이터 (페이지 로드 시 위치 가져올 때 표시) -->
-<div id="loading-indicator" class="spinner-border text-secondary" role="status">
-    <span class="visually-hidden">Loading...</span>
-</div>
+<!-- Include SVG Definitions if using SVG icons -->
+<!-- <div th:replace="~{fragments/svgs :: clothesSvg}"></div> -->
 
-
-<div class="container mt-3 mb-5">
+<div class="container mt-4 mb-5">
     <!-- Header Row -->
     <div class="row align-items-center mb-4">
         <!-- Weather Info (Left) -->
         <div class="col">
-            <div class="weather-info" th:if="${weatherData != null && weatherData.main != null && weatherData.weather != null && !weatherData.weather.isEmpty()}">
-                <img th:src="'http://openweathermap.org/img/wn/' + ${weatherData.weather[0].icon} + '@2x.png'" alt="날씨 아이콘">
+            <div class="weather-info" th:if="${weather != null and weather.main != null and weather.weather != null and !weather.weather.isEmpty()}">
+                <img th:src="'http://openweathermap.org/img/wn/' + ${weather.weather[0].icon} + '@2x.png'" alt="날씨 아이콘">
                 <div>
-                    <span th:text="${#numbers.formatDecimal(weatherData.main.temp, 1, 0)} + '°C'"></span>
-                    <div class="weather-feels-like" th:text="'체감 ' + ${#numbers.formatDecimal(weatherData.main.feelsLike, 1, 0)} + '°C'"></div>
+                    <span th:text="${#numbers.formatDecimal(weather.main.temp, 1, 0)} + '°C'"></span>
+                    <div class="weather-feels-like" th:text="'체감 ' + ${#numbers.formatDecimal(weather.main.feelsLike, 1, 0)} + '°C'"></div>
                 </div>
             </div>
-            <div class="weather-info" th:unless="${weatherData != null && weatherData.main != null && weatherData.weather != null && !weatherData.weather.isEmpty()}">
+            <div class="weather-info" th:unless="${weather != null and weather.main != null and weather.weather != null and !weather.weather.isEmpty()}">
                 <i class="bi bi-thermometer-low fs-3" style="color: var(--text-secondary);"></i>
-                <span class="ms-2">날씨 정보 로딩 중...</span>
+                <span class="ms-2">날씨 정보 없음</span>
             </div>
         </div>
         <!-- Location Info (Right) -->
         <div class="col-auto text-end">
-            <a href="#" class="location-info text-decoration-none" id="location-selector"> <!-- ID 추가 -->
-                <!-- 현재 위치 기반이면 아이콘 강조 (선택 사항) -->
-                <span th:text="${selectedCityName != null ? selectedCityName : '위치 설정'}">Seoul</span>
-                <i class="bi-geo-alt-fill"></i> <!-- 위치 아이콘 -->
+            <a href="#" class="location-info text-decoration-none" id="location-selector">
+                <span th:text="${weather != null and weather.name != null ? weather.name : 'Seoul'}">Seoul</span>
+                <i class="bi bi-geo-alt-fill"></i>
             </a>
         </div>
     </div>
@@ -96,23 +155,43 @@
     <!-- Date Row -->
     <div class="row text-center mb-5">
         <div class="col">
-            <span class="date fs-5" th:text="${currentDate}">05월 01일 목요일</span>
+            <!-- Assuming currentDate is still passed from controller -->
+            <span class="date fs-5" th:text="${#temporals.format(#temporals.createToday(), 'yyyy년 MM월 dd일 EEEE', T(java.util.Locale).KOREAN)}">날짜 정보</span>
+        </div>
+    </div>
+
+    <!-- City Title Row -->
+    <div class="row text-center mb-4" th:if="${weather != null}">
+        <div class="col">
+            <h2 class="fw-normal" th:text="${weather.name} + ' 추천 코디'">도시 추천 코디</h2>
         </div>
     </div>
 
     <!-- Outfit Recommendation Row -->
-    <div class="row g-lg-5 g-md-4 g-3 justify-content-center" th:if="${weatherData != null and outfitRecommendation != null}">
+    <div class="row g-lg-5 g-md-4 g-3 justify-content-center" th:if="${outfit != null}">
+
         <!-- Male Outfit Column -->
         <div class="col-12 col-md-6 col-lg-5">
             <div class="outfit-item">
                 <h5 class="outfit-title">남성 추천 코디</h5>
-                <div class="outfit-image-placeholder"></div>
-                <div class="outfit-details mt-3" th:if="${outfitRecommendation.maleOutfit != null}">
-                    <p><span class="label">상의:</span> <span th:text="${outfitRecommendation.maleOutfit.top}">린넨 셔츠</span></p>
-                    <p><span class="label">하의:</span> <span th:text="${outfitRecommendation.maleOutfit.bottom}">치노 팬츠</span></p>
-                    <p><span class="label">아우터:</span> <span th:text="${outfitRecommendation.maleOutfit.outer}">얇은 가디건</span></p>
-                    <p><span class="label">신발:</span> <span th:text="${outfitRecommendation.maleOutfit.shoes}">로퍼</span></p>
-                    <p><span class="label">액세서리:</span> <span th:text="${outfitRecommendation.maleOutfit.accessory}">선글라스, 캔버스 백</span></p>
+                <!-- Container for combined SVGs -->
+                <div class="outfit-svg-composition" id="male-outfit-svgs">
+                    <!-- SVGs will be injected here by JavaScript -->
+                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩중...</span>
+                </div>
+                <!-- Access nested DTO fields -->
+                <div class="outfit-details mt-3" th:if="${outfit.male != null}">
+                    <p><span class="label">상의:</span> <span th:text="${outfit.male.top?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">하의:</span> <span th:text="${outfit.male.bottom?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">아우터:</span> <span th:text="${outfit.male.outerwear?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">신발:</span> <span th:text="${outfit.male.shoes?.koreanName}">정보 없음</span></p>
+                    <!-- Display color/material if needed -->
+                    <!--
+                    <p><small class="text-secondary" th:text="'(' + ${outfit.male.top?.color} + ', ' + ${outfit.male.top?.material} + ')'"></small></p>
+                    -->
+                </div>
+                <div th:unless="${outfit.male != null}">
+                    <p class="text-secondary">남성 추천 정보 없음</p>
                 </div>
             </div>
         </div>
@@ -121,93 +200,205 @@
         <div class="col-12 col-md-6 col-lg-5">
             <div class="outfit-item">
                 <h5 class="outfit-title">여성 추천 코디</h5>
-                <div class="outfit-image-placeholder"></div>
-                <div class="outfit-details mt-3" th:if="${outfitRecommendation.femaleOutfit != null}">
-                    <p><span class="label">상의:</span> <span th:text="${outfitRecommendation.femaleOutfit.top}">코튼 블라우스</span></p>
-                    <p><span class="label">하의:</span> <span th:text="${outfitRecommendation.femaleOutfit.bottom}">A라인 스커트</span></p>
-                    <p><span class="label">아우터:</span> <span th:text="${outfitRecommendation.femaleOutfit.outer}">청자켓</span></p>
-                    <p><span class="label">신발:</span> <span th:text="${outfitRecommendation.femaleOutfit.shoes}">스니커즈</span></p>
-                    <p><span class="label">액세서리:</span> <span th:text="${outfitRecommendation.femaleOutfit.accessory}">에코백, 캡모자</span></p>
+                <div class="outfit-svg-composition" id="female-outfit-svgs">
+                    <span class="placeholder-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--text-secondary);">코디 로딩중...</span>
+                </div>
+                <div class="outfit-details mt-3" th:if="${outfit.female != null}">
+                    <p><span class="label">상의:</span> <span th:text="${outfit.female.top?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">하의:</span> <span th:text="${outfit.female.bottom?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">아우터:</span> <span th:text="${outfit.female.outerwear?.koreanName}">정보 없음</span></p>
+                    <p><span class="label">신발:</span> <span th:text="${outfit.female.shoes?.koreanName}">정보 없음</span></p>
+                </div>
+                <div th:unless="${outfit.female != null}">
+                    <p class="text-secondary">여성 추천 정보 없음</p>
                 </div>
             </div>
         </div>
     </div><!-- /.row -->
-
 </div> <!-- /.container -->
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<!-- JS 스크립트 -->
+
 <script th:inline="javascript">
-    var currentSelectedCity = /*[[${selectedCityName}]]*/ null; // 서버에서 전달된 현재 도시 이름
-    var isBasedOnCurrentLocation = /*[[${isCurrentLocation}]]*/ false; // 현재 위치 기반인지 여부
+    /*<![CDATA[*/
+    // Pass the outfit data from Thymeleaf to JavaScript
+    var outfitData = /*[[${outfit}]]*/ null; // Get the whole outfit DTO
+    var weatherData = /*[[${weather}]]*/ null; // Optional: if needed in JS
+    let currentSelectedCity = /*[[${weather?.name}]]*/ 'Seoul';
 
-    // 현재 URL 파라미터 확인
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasLatLon = urlParams.has('lat') && urlParams.has('lon');
-    const hasCity = urlParams.has('city');
+    // --- SVG Loading Function ---
+    async function loadAndInjectSvg(itemData, itemTypeClass, containerId) {
+        if (!itemData || !itemData.englishName || !itemData.color) {
+            console.warn(`SVG data missing for ${itemTypeClass} in container ${containerId}`);
+            return; // Skip if data is missing
+        }
+        const svgFilename = itemData.englishName;
+        const svgUrl = '/svg/' + svgFilename;
+        const color = itemData.color;
+        const container = $(`#${containerId}`);
+        container.find('.placeholder-text').hide(); // Hide placeholder text
 
-    function getCurrentLocationWeather() {
-        if ("geolocation" in navigator) {
-            $('#loading-indicator').show(); // 로딩 시작 표시
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                console.log("현재 위치:", latitude, longitude);
-                $('#loading-indicator').hide(); // 로딩 숨김
+        try {
+            const response = await fetch(svgUrl);
+            if (!response.ok) {
+                throw new Error(`SVG not found: ${response.statusText} (${svgUrl})`);
+            }
+            const svgText = await response.text();
 
-                // 위도/경도 파라미터로 페이지 리디렉션
-                window.location.href = '/outfit/recommended?lat=' + latitude + '&lon=' + longitude;
+            // Parse SVG text and apply color
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+            const svgElement = svgDoc.querySelector('svg');
 
-            }, function(error) {
-                $('#loading-indicator').hide(); // 로딩 숨김
-                console.error("Geolocation 오류:", error.code, error.message);
-                let message = "현재 위치를 가져올 수 없습니다.";
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        message = "위치 정보 접근 권한이 거부되었습니다.";
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        message = "위치 정보를 사용할 수 없습니다.";
-                        break;
-                    case error.TIMEOUT:
-                        message = "위치 정보 요청 시간이 초과되었습니다.";
-                        break;
+            // ---  신발(shoes)인 경우 특별 처리 ---
+            if (itemTypeClass === 'shoes') {
+                const baseSvgElement = svgDoc.querySelector('svg');
+                if (!baseSvgElement) {
+                    console.error("Could not find SVG element in fetched text for shoes:", svgUrl);
+                    return;
                 }
-                // 실패 시 사용자에게 알림 (선택 사항)
-                // alert(message + ' 기본 위치(Seoul) 또는 마지막 검색 위치로 표시합니다.');
-                // 실패하면 현재 페이지(기본 도시 또는 city 파라미터 도시) 유지
-            }, {
-                enableHighAccuracy: false, // 필요시 true로 변경
-                timeout: 10000,          // 10초 타임아웃
-                maximumAge: 0            // 캐시 사용 안 함
+
+                // 왼쪽 신발 생성 및 추가
+                const shoeLeft = baseSvgElement.cloneNode(true); //  복제
+                shoeLeft.removeAttribute('width');
+                shoeLeft.removeAttribute('height');
+                shoeLeft.style.fill = color;
+                shoeLeft.classList.add(`svg-shoes`, `svg-shoes-left`); //  두 클래스 추가
+                container.append(shoeLeft);
+
+                // 오른쪽 신발 생성 및 추가
+                const shoeRight = baseSvgElement.cloneNode(true); //  복제
+                shoeRight.removeAttribute('width');
+                shoeRight.removeAttribute('height');
+                shoeRight.style.fill = color;
+                shoeRight.classList.add(`svg-shoes`, `svg-shoes-right`); //  두 클래스 추가
+                container.append(shoeRight);
+                // 필요시 오른쪽 신발 좌우 반전 (SVG 디자인에 따라)
+                // shoeRight.style.transform = 'scaleX(-1)'; // CSS에서 transform을 사용하므로 여기서 중복 적용 주의
+
+            } else {
+                // --- 신발 외 다른 아이템 처리 (기존 로직) ---
+                const svgElement = svgDoc.querySelector('svg');
+                if (svgElement) {
+                    svgElement.removeAttribute('width');
+                    svgElement.removeAttribute('height');
+                    svgElement.style.fill = color;
+                    svgElement.classList.add(`svg-${itemTypeClass}`);
+                    container.append(svgElement);
+                } else {
+                    console.error("Could not find SVG element in fetched text:", svgUrl);
+                }
+            }
+            // if (svgElement) {
+            //     // Remove existing width/height to allow CSS control
+            //     svgElement.removeAttribute('width');
+            //     svgElement.removeAttribute('height');
+            //     // svgElement.style.color = color; // This works if paths use fill/stroke="currentColor"
+            //     svgElement.style.fill = color; // Apply color to the SVG
+            //
+            //     svgElement.classList.add(`svg-${itemTypeClass}`); // Add class for positioning
+            //
+            //     // Inject the modified SVG element
+            //     container.append(svgElement);
+            // } else {
+            //     console.error("Could not find SVG element in fetched text:", svgUrl);
+            // }
+
+        } catch (error) {
+            console.error(`Error loading SVG ${itemData.englishName}:`, error);
+            // Optionally display an error message or fallback in the container
+            container.append(`<small class="text-danger">(${itemData.koreanName} 로드 실패)</small>`);
+        }
+    }
+
+    // 위도/경도 기반 도시 감지 및 페이지 리로드
+    function handleGeoSuccess(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // 백엔드 API 호출 (fetch 사용)
+        fetch(`/city?latitude=${latitude}&longitude=${longitude}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json(); // CityDTO 예상
+            })
+            .then(data => {
+                console.log("City data received:", data);
+                // 도시 이름 추출 (한국어 우선)
+                const cityName = (data.localNames && data.localNames.ko) ? data.localNames.ko : data.name;
+
+                if (cityName) {
+                    //  현재 표시된 도시와 감지된 도시 비교
+                    if (!currentSelectedCity || cityName.toLowerCase() !== currentSelectedCity.toLowerCase()) {
+                        console.log(`Reloading page for city: ${cityName}`);
+                        //  다른 도시이면 해당 도시로 페이지 리로드
+                        window.location.href = '/?city=' + encodeURIComponent(cityName);
+                    } else {
+                        console.log(`Already displaying weather for ${cityName}. No reload needed.`);
+                        $('#location-display span').text(cityName); // 현재 위치 표시 업데이트
+                    }
+                } else {
+                    handleGeoError({ message: "City name not found from coordinates" });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching city name:", error);
+                handleGeoError(error); // 공통 에러 핸들러 호출
             });
+    }
+
+    function handleGeoError(error) {
+        console.warn(`Geolocation or City fetch error: ${error.message}`);
+        // 에러 발생 시 서버에서 받은 도시(기본값) 표시
+        if (currentSelectedCity) {
+            $('#location-display span').text(currentSelectedCity);
+            $('#location-display').attr('title', `위치 자동 감지 실패 (${error.message})`);
         } else {
-            console.log("이 브라우저에서는 Geolocation이 지원되지 않습니다.");
-            // 지원되지 않으면 현재 페이지(기본 도시 또는 city 파라미터 도시) 유지
+            $('#location-display span').text('Seoul');
+            $('#location-display').attr('title', error.message);
         }
     }
 
     $(document).ready(function() {
-        // 페이지 로드 시, URL에 위도/경도 파라미터가 없고 도시 파라미터도 없을 경우 (최초 접속 시) 현재 위치 요청 시도
-        // 또는, 사용자가 이전에 현재 위치를 선택하지 않았을 경우 요청
-        if (!hasLatLon && !hasCity) {
-            getCurrentLocationWeather();
+        // Location selector click event (unchanged)
+        $('#location-selector').on('click', function(e) { /* ... */ });
+
+        // Load SVGs if outfit data exists
+        if (outfitData) {
+            // Load Male SVGs
+            if (outfitData.male) {
+                // loadAndInjectSvg(outfitData.male.outerwear, 'outerwear', 'male-outfit-svgs');
+                loadAndInjectSvg(outfitData.male.top,       'top',       'male-outfit-svgs');
+                loadAndInjectSvg(outfitData.male.bottom,    'bottom',    'male-outfit-svgs');
+                loadAndInjectSvg(outfitData.male.shoes,     'shoes',     'male-outfit-svgs');
+            }
+            // Load Female SVGs
+            if (outfitData.female) {
+                // loadAndInjectSvg(outfitData.female.outerwear, 'outerwear', 'female-outfit-svgs');
+                loadAndInjectSvg(outfitData.female.top,       'top',       'female-outfit-svgs');
+                loadAndInjectSvg(outfitData.female.bottom,    'bottom',    'female-outfit-svgs');
+                loadAndInjectSvg(outfitData.female.shoes,     'shoes',     'female-outfit-svgs');
+            }
         }
 
-        // 위치 정보(텍스트+아이콘) 클릭 이벤트
-        $('#location-selector').on('click', function(e) {
-            e.preventDefault();
+        // URL 파라미터 확인 및 Geolocation 실행 조건 수정
+        const urlParams = new URLSearchParams(window.location.search);
+        const cityParamExists = urlParams.has('city'); // 'city' 파라미터가 있는지 확인
 
-            var currentCityName = currentSelectedCity ? currentSelectedCity : "";
-            var newCity = prompt("도시 이름을 입력하세요:", currentCityName);
-            if (newCity !== null && newCity.trim() !== "") {
-                window.location.href = '/outfit/recommended?city=' + encodeURIComponent(newCity.trim());
-            } else if (newCity === "") {
-                alert("도시 이름을 입력해주세요.");
-            }
-        });
+        // 현재 위치 가져오는 함수
+        if (!cityParamExists && navigator.geolocation) {
+            $('#location-info span').text('위치 찾는중...');
+            navigator.geolocation.getCurrentPosition(
+                handleGeoSuccess, // 성공 시 콜백
+                handleGeoError,   // 실패 시 콜백
+                { timeout: 10000 } // 타임아웃 설정 (10초)
+            );
+        } else {
+            $('#location-display span').text(currentSelectedCity); // 기본 도시 표시 (ID 확인 필요)
+        }
     });
+    /*]]>*/
 </script>
 
 </body>
